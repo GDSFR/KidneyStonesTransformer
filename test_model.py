@@ -60,6 +60,11 @@ if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     test_session = config.test_session
 
+    if config.task_name == "KidneyStones":
+        test_num = 30
+        model_type = config.model_name
+        model_path = "./KidneyStones/" + model_type + "/" + test_session + "/models/best_model-" + model_type + ".pth.tar"
+
     if config.task_name == "MoNuSeg":
         test_num = 14
         model_type = config.model_name

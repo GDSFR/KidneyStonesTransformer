@@ -66,6 +66,7 @@ def worker_init_fn(worker_id):
 ##################################################################################
 def main_loop(batch_size=config.batch_size, model_type='', tensorboard=True):
     # Load train and val data
+    global train_dataset, val_dataset
     train_tf = transforms.Compose([RandomGenerator(output_size=[config.img_size, config.img_size])])
     val_tf = ValGenerator(output_size=[config.img_size, config.img_size])
     if config.task_name == 'MoNuSeg':
@@ -79,7 +80,12 @@ def main_loop(batch_size=config.batch_size, model_type='', tensorboard=True):
         train_dataset = ImageToImage2D(config.train_dataset, config.task_name, text, train_tf,
                                        image_size=config.img_size)
         val_dataset = ImageToImage2D(config.val_dataset, config.task_name, text, val_tf, image_size=config.img_size)
-
+    elif config.task_name == "KidneyStones":
+        text = read_text(config.task_dataset + 'Train_text.xlsx')
+        val_text = read_text(config.val_dataset + 'Val_text.xlsx')
+        train_dataset = ImageToImage2D(config.train_dataset, config.task_name, text, train_tf,
+                                       image_size=config.img_size)
+        val_dataset = ImageToImage2D(config.val_dataset, config.task_name, val_text, val_tf, image_size=config.img_size)
 
     train_loader = DataLoader(train_dataset,
                               batch_size=config.batch_size,
@@ -94,7 +100,7 @@ def main_loop(batch_size=config.batch_size, model_type='', tensorboard=True):
                             worker_init_fn=worker_init_fn,
                             num_workers=8,
                             pin_memory=True)
-                             
+
     lr = config.learning_rate
     logger.info(model_type)
 
@@ -125,7 +131,7 @@ def main_loop(batch_size=config.batch_size, model_type='', tensorboard=True):
         raise TypeError('Please enter a valid name for the model type')
     input = torch.randn(2, 3, 224, 224)
     text = torch.randn(2, 10, 768)
-    flops, params = profile(model, inputs=(input, text, ))
+    flops, params = profile(model, inputs=(input, text,))
     print('flops:{}'.format(flops))
     print('params:{}'.format(params))
     model = model.cuda()

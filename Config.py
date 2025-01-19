@@ -23,7 +23,8 @@ vis_frequency = 10
 early_stopping_patience = 50
 
 pretrain = False
-task_name = 'MoNuSeg' 
+task_name = 'KidneyStones'
+# task_name = 'MoNuSeg'
 # task_name = 'Covid19'
 learning_rate = 1e-3  # MoNuSeg: 1e-3, Covid19: 3e-4
 batch_size = 2  # For LViT-T, 2 is better than 4
